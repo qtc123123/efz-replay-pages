@@ -1,39 +1,57 @@
 # EFZ replay player
 
-[Open the player](https://qtc123123.github.io/efz-replay-pages/public/replay.html).
+Browser playback for supported Eternal Fighter Zero Revival recordings, with original game artwork, stage music, effects, voices, exact restart seeking and an optional read-only training inspector.
 
-Choose the battle's **First to** setting (1–3, default 2), then open a local `.rep` file and press **Play**. The recording does not store that win target. No resource key entry or game installation is required. Recording bytes stay in the browser.
+## Watch and inspect a recording
 
-## Playback and navigation
+[Open the replay player](https://qtc123123.github.io/efz-replay-pages/public/replay.html).
 
-The original EFZ title/replay artwork supplies the neutral opening screen and selected menu states. Fighters appear only after full replay validation, using the two recorded characters and palettes. Replacement clears the old match immediately. The complete game image keeps its 4:3 proportions, with nearby controls and small fighter/stat panels.
+Set **First to** to the original battle's win target (1, 2 or 3; default 2), choose **Open replay**, select your local `.rep` file, then press **Play**. The recording does not store the win target. No resource key entry or local game installation is required. Your recording stays in your browser.
 
-Play/Pause, single-update Step, Previous update, Restart, a release-to-seek timeline and fullscreen are available. **Space** toggles playback, **Right/Left Arrow** move one update, **Home** restarts and **Escape** cancels a seek. Volume controls for music and effects/voices are independent.
+The neutral title/replay menu appears before full validation. After admission, the original character-select background, moving portrait strips, wings, nameplates and HUD textures surround the dominant 4:3 game image. Only the two recorded fighters and their palettes are shown. Invalid or replacement uploads clear the old identity immediately. Decorative artwork comes from original game resources; operational labels remain accessible HTML.
 
-The cursor counts complete battle updates at 64 per second. Boundary N means inputs `[0,N)` have been consumed. Seeking starts a fresh Worker and executes all normal updates and stateful renders to the target. It hides only historical external images and sounds. Progress and Cancel remain available; cancellation or a failed same-replay seek keeps the previous valid position. Later targets can take several seconds, and a 120-second deadline bounds long seeks. Rewind remains available after natural completion.
+Use Play/Pause, Restart, Previous, Next, the timeline and Fullscreen. Space toggles playback, Right Arrow steps, Left Arrow moves back and Home restarts while paused. One displayed update means one complete engine update; this Pages profile runs at **64 complete updates per second**, distinct from its inner simulation steps. Timeline release starts a fresh-Worker resimulation with progress, cancellation and a deadline. Seeking is multi-second. Failed or cancelled same-replay seeks retain the previous valid display. Restart returns to preplay without inventing a battle frame; rewind remains available after completion.
 
-Restart displays the identified preplay state without generating an extra battle image. The image's actual origin and the statistics boundary are labelled separately. HP, SP, RF/mode and round wins follow the cursor, with no accumulated damage/combo totals. HP can be negative at KO or reach 10000 for Makoto. SP is the sole super meter (0–3000); RF retains fractional values (0–1000) and normal/blue mode. Final carried values keep their original live update label. No per-frame history is retained or counted twice.
+The small player panels show raw HP, SP, RF/mode and wins. Open **Training inspector** for:
 
-Seeking stops effects/voices and resets music. Historical sound events are discarded; the next Play restarts the selected stage track. Step is silent. This is a defined browser audio policy, not sample-accurate native audio restoration.
+- **Hitboxes:** yellow fighter push/body, plus green hurt and red attack geometry for fighters and active children. Attack geometry can remain after a hit; it does not guarantee that contact is currently damaging.
+- **Recorded inputs:** held directions and A–D buttons, with timestamped runs you can click to seek. History is reconstructed from the current cursor, so revisiting a segment cannot double-count it. This is recorded input, not a claim that the engine accepted a command.
+- **Detailed state:** the raw combo counter, current/last combo damage, round maxima, next-hit scaling, untech/hitstop/freeze counters, state/pattern frame, position/facing and separate HUD counter/timer. Maxima reset each round. Internal timers do not establish frame advantage or general remaining blockstun.
 
-## Supported input and resources
+The inspector labels actor-value and prepared-image origins separately. It reads existing state without adding input, RNG, update or render calls. It does not activate training mode or alter the recording.
 
-The local profile retains all 25 character IDs, 23 stages, six recorded DAT palettes and explicit win targets of 1–3. It accepts the existing marker-104 paired-input extension with a valid saved RNG state and zero auxiliary-command high bytes, bounded to 64 MiB and 1,000,000 updates. Unsupported and malformed files fail clearly. Playback validates the exact natural battle end rather than treating a valid header as sufficient.
+Music and effects/voices have separate volume controls. Pause, Step, replacement and completion stop transient effects; Step is silent. Hidden seeking discards historical sounds, and BGM restarts on the next Play after seek. Audio failures are displayed without changing simulation results.
 
-The unchanged authenticated encrypted pack contains 506 resource paths and 450 unique ciphertext objects: supported battle resources, 23 tracks, 59 effects, 222 voices and 30 interface/portrait paths. The player loads the selected battle and requested artwork. The generated browser access module remains bound to the exact manifest; published obfuscation does not make browser-delivered resources secret. Original plaintext files, raw operator keys, private recordings, full native decompilations and development history are excluded.
+## Supported profile and resources
 
-Original source notices remain in `NOTICE.md` and `public/upstream-license.txt`. This repository does not relicense third-party code or game resources.
+The local profile accepts all **25 character IDs**, **23 stages**, **six palettes**, and explicit win targets **1–3**. Supported files use the EFZ Revival marker-104 paired-input extension with a valid saved RNG state. Auxiliary-command high bytes must be zero. Files are bounded to 64 MiB and 1,000,000 updates. Unsupported or incomplete files are rejected; the chosen win target must reproduce the recording's natural battle end. Menus are skipped and battle intros run.
 
-## Reviewed incremental deployment
+The unchanged encrypted manifest covers **506 resource paths and 450 unique ciphertext objects**: supported battle resources, 23 stage tracks, 59 effect paths and 222 voice paths. The presentation now uses 31 interface/portrait paths; its additional `system/object.dat` role reuses a resource already required by battle. No new resource bytes were added for this revision. Sparse original sound inventories are preserved without invented replacement clips.
 
-The final site contains **480 files / 207,554,697 bytes**. The original nine base archive parts and the existing sound/art overlay remain unchanged. `game-faithful-overlay.zip` adds exactly **15 changed or new code/configuration files / 378,283 ZIP bytes**, with SHA-256 `326d24b09cc717ea3bcff251e9f0da78637b9ea95574ea1a6975e5f4f977abf5`. It contains no resource payloads.
+Resources decrypt automatically through the public access module bound to the exact manifest. Original key files, plaintext media, private recordings and development history are excluded. Browser delivery necessarily supplies the information needed for decryption; it does not make public resources secret. `NOTICE.md` and `public/upstream-license.txt` preserve upstream notices. This repository does not relicense third-party code or game resources.
 
-`base-site-sha256.txt`, `overlay-sha256.txt`, `sound-art-site-sha256.txt`, `game-faithful-overlay-sha256.txt` and `site-sha256.txt` identify each archive stage and the complete final tree. The final file manifest has SHA-256 `736cf369e219776c72f25b240aa8c60ac4fe06a6583b1c81db077f133461d393`.
+## Reviewed deployment
 
-The pinned workflow verifies every archive commitment, exact safe member inventory, prior file identity before overwriting, and every final file digest. It refuses extra files, symlinks, unreviewed replacements and changes to the existing encrypted resources or bound browser access module. Only the fully verified result is uploaded to Pages.
+The site contains **483 files / 207,590,903 bytes**. Deployment reuses the unchanged nine base ZIP parts and original sound/art overlay. The third `game-faithful-overlay.zip` contains exactly **19 changed or added files / 389,994 ZIP bytes**. Its SHA-256 is:
+
+```
+a428c463b8621ce9a67857b82a11ed5c1835fb610f2502927330788107132d6f
+```
+
+The final `site-sha256.txt` SHA-256 is:
+
+```
+f3561f44a762e51e5d2056569893797ed602e8a10c309cbbb229958841e85d83
+```
+
+The pinned Actions workflow verifies the exact ordered nine-part set, all three archive commitments, safe exact ZIP member sets, the 197-file base, the 475-file sound/art result, the exact 19-file code delta and the complete 483-file final tree. It rejects extra files, symlinks, traversal, changed bases and unexpected overwrites. Encrypted resources and bound browser access must remain byte-identical. Only that verified tree is uploaded to Pages. Future updates must regenerate the code overlay and commitments together; do not reupload the unchanged base archive.
+
+Implementation and detailed qualification are maintained on the isolated [source branch](https://github.com/Aquat1c/efz-replay-lab/tree/feat/game-faithful-replay-verified-20261027). Source main and the recovered working checkout are preserved.
 
 ## Qualification boundary
 
-Fresh checks compare the original 7,637-update recording and representative animated-stage/character probes against sequential execution in the pinned JavaScript engine. Source-derived menu samples are compared with the original pinned JavaScript routines and actual resources. Browser checks cover cursor-relative output, transport, races and desktop/narrow/touch-emulated layouts. These checks establish scoped JavaScript agreement and observed browser behavior; they do not establish native Windows parity, every matchup, physical audibility or performance on actual mobile hardware.
+The fresh source regression passed **1,175 tests**, with no failures or skips. Original-recording and representative animated-stage/character probes compared **69,473 target/suffix boundaries**, including prepared images, raw statistics and training projection. The original observation trace and separate service engine remain unchanged. Source-art checks cover all 25 character identities and six palettes. Exact extracted-artifact and live browser reports are recorded separately with their own hashes, timings and publication status.
 
-The separate service engine SHA-256 remains `7d5a8e117394ca29fea3a139eadc95cab88e7f6b0427078d1dc64584ed676f3c`. General local checkpoints remain refused. **T04 is unimplemented and unqualified**: finite battle rewind does not qualify continuous startup, selection, loading, battle, results and rematch resume. No native results/rematch lifecycle is fabricated. Long recordings can exceed the restart-seek deadline; qualified checkpoint acceleration and advanced replay history are future work.
+These are pinned-JavaScript/source agreement and browser checks. They do not establish native Windows parity, physical audibility, every matchup's correctness or actual mobile-device performance. The inspector does not infer frame advantage, generic throw boxes or cumulative match damage from unproven signals.
+
+**T04 remains unimplemented and unqualified.** Local checkpoints remain refused. Restart seeking does not qualify portable restoration or continuous startup, selection, loading, battle, results and rematch resume. No results/rematch lifecycle is fabricated.

@@ -165,8 +165,8 @@ jobs:
           base = read_manifest(repository / 'base-site-sha256.txt', 197)
           overlay = read_manifest(repository / 'overlay-sha256.txt', 288)
           sound_final = read_manifest(repository / 'sound-art-site-sha256.txt', 475)
-          final = read_manifest(repository / 'site-sha256.txt', 480)
-          redesign = read_manifest(repository / 'game-faithful-overlay-sha256.txt', 15)
+          final = read_manifest(repository / 'site-sha256.txt', 483)
+          redesign = read_manifest(repository / 'game-faithful-overlay-sha256.txt', 19)
           need(set(base) <= set(sound_final), 'base file removal is not authorized')
           need(overlay == {name: digest for name, digest in sound_final.items() if base.get(name) != digest}, 'overlay is not the exact reviewed delta')
           need(all(sound_final[name] == digest for name, digest in base.items() if name.startswith('deployment/assets/objects/')), 'existing ciphertext must be reused unchanged')
@@ -183,8 +183,8 @@ jobs:
           need(overlay_zip.stat().st_size < 25_000_000 and file_hash(overlay_zip) == overlay_commitment['sound-art-overlay.zip'], 'overlay archive extent/digest')
           redesign_zip = repository / 'game-faithful-overlay.zip'
           redesign_commitment = read_manifest(repository / 'game-faithful-overlay.zip.sha256', 1)
-          need(redesign_commitment == {'game-faithful-overlay.zip': '326d24b09cc717ea3bcff251e9f0da78637b9ea95574ea1a6975e5f4f977abf5'}, 'unreviewed redesign archive commitment')
-          need(redesign_zip.stat().st_size == 378283 and file_hash(redesign_zip) == redesign_commitment['game-faithful-overlay.zip'], 'redesign archive extent/digest')
+          need(redesign_commitment == {'game-faithful-overlay.zip': 'a428c463b8621ce9a67857b82a11ed5c1835fb610f2502927330788107132d6f'}, 'unreviewed redesign archive commitment')
+          need(redesign_zip.stat().st_size == 389994 and file_hash(redesign_zip) == redesign_commitment['game-faithful-overlay.zip'], 'redesign archive extent/digest')
           destination = temporary / 'replay-pages-site'
           extract_checked(base_zip, destination, base, {})
           base_bytes = verify_tree(destination, base)
