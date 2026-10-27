@@ -183,8 +183,8 @@ jobs:
           need(overlay_zip.stat().st_size < 25_000_000 and file_hash(overlay_zip) == overlay_commitment['sound-art-overlay.zip'], 'overlay archive extent/digest')
           redesign_zip = repository / 'game-faithful-overlay.zip'
           redesign_commitment = read_manifest(repository / 'game-faithful-overlay.zip.sha256', 1)
-          need(redesign_commitment == {'game-faithful-overlay.zip': 'a428c463b8621ce9a67857b82a11ed5c1835fb610f2502927330788107132d6f'}, 'unreviewed redesign archive commitment')
-          need(redesign_zip.stat().st_size == 389994 and file_hash(redesign_zip) == redesign_commitment['game-faithful-overlay.zip'], 'redesign archive extent/digest')
+          need(redesign_commitment == {'game-faithful-overlay.zip': '8a191e6baada564d89889569120cdf5c125cd82dd488b14a0a499acad2fbb655'}, 'unreviewed redesign archive commitment')
+          need(redesign_zip.stat().st_size == 390698 and file_hash(redesign_zip) == redesign_commitment['game-faithful-overlay.zip'], 'redesign archive extent/digest')
           destination = temporary / 'replay-pages-site'
           extract_checked(base_zip, destination, base, {})
           base_bytes = verify_tree(destination, base)

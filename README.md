@@ -8,11 +8,11 @@ Browser playback for supported Eternal Fighter Zero Revival recordings, with ori
 
 Set **First to** to the original battle's win target (1, 2 or 3; default 2), choose **Open replay**, select your local `.rep` file, then press **Play**. The recording does not store the win target. No resource key entry or local game installation is required. Your recording stays in your browser.
 
-The neutral title/replay menu appears before full validation. After admission, the original character-select background, moving portrait strips, wings, nameplates and HUD textures surround the dominant 4:3 game image. Only the two recorded fighters and their palettes are shown. Invalid or replacement uploads clear the old identity immediately. Decorative artwork comes from original game resources; operational labels remain accessible HTML.
+The neutral title/replay menu appears before full validation. A large, sharp 4:3 player leads the page, with the original character-select background slightly enlarged, blurred and darkened behind it. Compact fighter identities and prominent numerical statistics sit below the image. Only the two admitted fighters and their recorded palettes are shown. Invalid or replacement uploads clear the old identity immediately. Decorative artwork comes from original game resources; operational labels remain accessible HTML.
 
-Use Play/Pause, Restart, Previous, Next, the timeline and Fullscreen. Space toggles playback, Right Arrow steps, Left Arrow moves back and Home restarts while paused. One displayed update means one complete engine update; this Pages profile runs at **64 complete updates per second**, distinct from its inner simulation steps. Timeline release starts a fresh-Worker resimulation with progress, cancellation and a deadline. Seeking is multi-second. Failed or cancelled same-replay seeks retain the previous valid display. Restart returns to preplay without inventing a battle frame; rewind remains available after completion.
+Use Play/Pause, Restart, Previous, Next, the timeline and Fullscreen. Space toggles playback, Right Arrow steps, Left Arrow moves back and Home restarts while paused. F toggles fullscreen. Fullscreen keeps gameplay, menus and hitboxes in one correctly proportioned 4:3 area, with black letterboxing and room for the actual control layout; Escape exits fullscreen (or cancels an active seek first). Entering or leaving fullscreen preserves replay and audio state. One displayed update means one complete engine update; this Pages profile runs at **64 complete updates per second**, distinct from its inner simulation steps. Timeline release starts a fresh-Worker resimulation with progress, cancellation and a deadline. Seeking is multi-second. Failed or cancelled same-replay seeks retain the previous valid display. Restart returns to preplay without inventing a battle frame; rewind remains available after completion.
 
-The small player panels show raw HP, SP, RF/mode and wins. Open **Training inspector** for:
+The player panels show large tabular numbers for raw HP, SP and RF, alongside RF mode and wins. Numeric values remain readable on narrow screens. Open **Training inspector** for:
 
 - **Hitboxes:** yellow fighter push/body, plus green hurt and red attack geometry for fighters and active children. Attack geometry can remain after a hit; it does not guarantee that contact is currently damaging.
 - **Recorded inputs:** held directions and A–D buttons, with timestamped runs you can click to seek. History is reconstructed from the current cursor, so revisiting a segment cannot double-count it. This is recorded input, not a claim that the engine accepted a command.
@@ -32,16 +32,16 @@ Resources decrypt automatically through the public access module bound to the ex
 
 ## Reviewed deployment
 
-The site contains **483 files / 207,590,903 bytes**. Deployment reuses the unchanged nine base ZIP parts and original sound/art overlay. The third `game-faithful-overlay.zip` contains exactly **19 changed or added files / 389,994 ZIP bytes**. Its SHA-256 is:
+The site contains **483 files / 207,593,259 bytes**. Deployment reuses the unchanged nine base ZIP parts and original sound/art overlay. The third `game-faithful-overlay.zip` contains exactly **19 changed or added files / 390,698 ZIP bytes**. Its SHA-256 is:
 
 ```
-a428c463b8621ce9a67857b82a11ed5c1835fb610f2502927330788107132d6f
+8a191e6baada564d89889569120cdf5c125cd82dd488b14a0a499acad2fbb655
 ```
 
 The final `site-sha256.txt` SHA-256 is:
 
 ```
-f3561f44a762e51e5d2056569893797ed602e8a10c309cbbb229958841e85d83
+54178fce9c664b26513a9375f6e2331f0aef8402224a327680aa91dde6873f7a
 ```
 
 The pinned Actions workflow verifies the exact ordered nine-part set, all three archive commitments, safe exact ZIP member sets, the 197-file base, the 475-file sound/art result, the exact 19-file code delta and the complete 483-file final tree. It rejects extra files, symlinks, traversal, changed bases and unexpected overwrites. Encrypted resources and bound browser access must remain byte-identical. Only that verified tree is uploaded to Pages. Future updates must regenerate the code overlay and commitments together; do not reupload the unchanged base archive.
@@ -50,7 +50,7 @@ Implementation and detailed qualification are maintained on the isolated [source
 
 ## Qualification boundary
 
-The fresh source regression passed **1,175 tests**, with no failures or skips. Original-recording and representative animated-stage/character probes compared **69,473 target/suffix boundaries**, including prepared images, raw statistics and training projection. The original observation trace and separate service engine remain unchanged. Source-art checks cover all 25 character identities and six palettes. Exact extracted-artifact and live browser reports are recorded separately with their own hashes, timings and publication status.
+This presentation revision changes only the page HTML, CSS and page controller. The generated engine, replay/seek/training modules, encrypted resources and keyless access retain their verified identities. The prior engine/training qualification compared **69,473 target/suffix boundaries**, including prepared images, raw statistics and training projection; prior source-art checks cover all 25 character identities and six palettes. The original observation trace and separate service engine remain unchanged. The fresh source regression for this presentation revision passed **1,178/1,178 tests**, with zero failures, skips or cancellations. The exact extracted-artifact Chromium campaign passed **48/48 cases**, including all **31 served-runtime SHA-256 and byte-length checks**, with no page or console errors. Canonical live verification for this revision is pending publication; its results are recorded separately with exact hashes and timings.
 
 These are pinned-JavaScript/source agreement and browser checks. They do not establish native Windows parity, physical audibility, every matchup's correctness or actual mobile-device performance. The inspector does not infer frame advantage, generic throw boxes or cumulative match damage from unproven signals.
 
