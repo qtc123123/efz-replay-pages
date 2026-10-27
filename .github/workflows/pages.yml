@@ -35,7 +35,7 @@ jobs:
           unzip -q replay-site.zip -d "$RUNNER_TEMP/replay-pages-site"
           cd "$RUNNER_TEMP/replay-pages-site"
           sha256sum --strict --check "$GITHUB_WORKSPACE/site-sha256.txt"
-          test "$(find . -type f | wc -l)" -eq 28
+          test "$(find . -type f | wc -l)" -eq 29
           test "$(find . -type l | wc -l)" -eq 0
       - name: Read Pages configuration
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
