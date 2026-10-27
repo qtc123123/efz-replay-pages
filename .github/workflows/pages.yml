@@ -1,4 +1,4 @@
-name: Deploy replay player
+name: Deploy replay theater
 
 on:
   push:
@@ -24,45 +24,170 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Check out the deployment package
+      - name: Check out the reviewed base and overlay
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Verify and extract the reviewed static package
+      - name: Verify base, apply exact overlay, and verify the complete site
         shell: bash
         run: |
           set -euo pipefail
           parts=(replay-site.zip.part-{000..008})
           actual_parts=(replay-site.zip.part-*)
           test "${#actual_parts[@]}" -eq 9
-          printf '%s\n' "${parts[@]}" | diff - <(awk '{print $2}' parts-sha256.txt)
-          sha256sum --strict --check parts-sha256.txt
+          printf '%s\n' "${parts[@]}" | diff - <(printf '%s\n' "${actual_parts[@]}")
+          printf '%s\n' "${parts[@]}" | diff - <(awk '{print $2}' "$GITHUB_WORKSPACE/parts-sha256.txt")
+          for part in "${parts[@]}"; do
+            test -f "$part" && test ! -L "$part"
+            test "$(stat -c%s "$part")" -le 20971520
+          done
+          sha256sum --strict --check "$GITHUB_WORKSPACE/parts-sha256.txt"
+          test ! -e "$RUNNER_TEMP/replay-site.zip" && test ! -L "$RUNNER_TEMP/replay-site.zip"
           cat "${parts[@]}" > "$RUNNER_TEMP/replay-site.zip"
-          cd "$RUNNER_TEMP"
-          sha256sum --strict --check "$GITHUB_WORKSPACE/replay-site.zip.sha256"
-          python3 - "$RUNNER_TEMP/replay-site.zip" "$GITHUB_WORKSPACE/site-sha256.txt" <<'ZIP_CHECK'
-          import pathlib, stat, sys, zipfile
-          expected = [line.rstrip('\n')[66:] for line in open(sys.argv[2])]
-          assert len(expected) == len(set(expected)) == 197
-          with zipfile.ZipFile(sys.argv[1]) as archive:
-              members = archive.infolist()
-              names = [member.filename for member in members]
-              assert len(names) == len(set(names)) == 197 and set(names) == set(expected)
-              for member in members:
-                  path = pathlib.PurePosixPath(member.filename)
-                  assert not path.is_absolute() and '..' not in path.parts and '\\' not in member.filename
-                  assert not member.is_dir() and stat.S_ISREG(member.external_attr >> 16)
-          ZIP_CHECK
-          unzip -q "$RUNNER_TEMP/replay-site.zip" -d "$RUNNER_TEMP/replay-pages-site"
-          cd "$RUNNER_TEMP/replay-pages-site"
-          sha256sum --strict --check "$GITHUB_WORKSPACE/site-sha256.txt"
-          test "$(find . -type f | wc -l)" -eq 197
-          test "$(find . -type l | wc -l)" -eq 0
+          python3 - "$GITHUB_WORKSPACE" "$RUNNER_TEMP" <<'VERIFY_SITE'
+          import hashlib
+          import pathlib
+          import re
+          import stat
+          import zipfile
+
+          MAX_FILE_BYTES = 64 * 1024 * 1024 + 128 * 1024
+          MAX_SITE_BYTES = 1_000_000_000
+
+
+          def need(ok, message):
+              if not ok:
+                  raise ValueError(message)
+
+
+          def safe_name(name):
+              need(isinstance(name, str) and 0 < len(name) <= 512 and re.fullmatch(r'[A-Za-z0-9_./-]+', name), 'unsafe member name')
+              path = pathlib.PurePosixPath(name)
+              need(not path.is_absolute() and all(part not in ('', '.', '..') for part in name.split('/')) and str(path) == name, 'noncanonical member name')
+              return path
+
+
+          def file_hash(path):
+              need(not path.is_symlink() and stat.S_ISREG(path.stat().st_mode), 'regular file required')
+              before = path.stat()
+              digest = hashlib.sha256()
+              size = 0
+              with path.open('rb') as source:
+                  for block in iter(lambda: source.read(1024 * 1024), b''):
+                      size += len(block)
+                      need(size <= MAX_SITE_BYTES, 'input capacity')
+                      digest.update(block)
+              after = path.stat()
+              need(size == before.st_size and all(getattr(before, key) == getattr(after, key) for key in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_ctime_ns')), 'input changed')
+              return digest.hexdigest()
+
+
+          def read_manifest(path, count):
+              need(not path.is_symlink() and stat.S_ISREG(path.stat().st_mode) and path.stat().st_size <= 256 * 1024, 'checksum manifest extent/type')
+              entries = {}
+              for line in path.read_text(encoding='ascii').splitlines(keepends=True):
+                  match = re.fullmatch(r'([a-f0-9]{64})  ([A-Za-z0-9_./-]+)\n', line)
+                  need(match is not None, 'checksum manifest line')
+                  digest, name = match.groups()
+                  safe_name(name)
+                  need(name not in entries, 'duplicate checksum path')
+                  entries[name] = digest
+              need(len(entries) == count, 'checksum manifest count')
+              parents = {parent.as_posix() for name in entries for parent in safe_name(name).parents if str(parent) != '.'}
+              need(not (set(entries) & parents), 'file/directory path conflict')
+              return entries
+
+
+          def verify_tree(root, expected):
+              need(root.is_dir() and not root.is_symlink(), 'regular output directory required')
+              files, directories = set(), set()
+              total = 0
+              for entry in root.rglob('*'):
+                  name = entry.relative_to(root).as_posix()
+                  need(not entry.is_symlink(), 'output symlink refused')
+                  mode = entry.stat().st_mode
+                  if stat.S_ISDIR(mode):
+                      directories.add(name)
+                  else:
+                      need(stat.S_ISREG(mode) and entry.stat().st_nlink == 1, 'output link or special file refused')
+                      need(name in expected, 'extra output file')
+                      need(file_hash(entry) == expected[name], 'file digest mismatch: ' + name)
+                      files.add(name)
+                      total += entry.stat().st_size
+              parents = {parent.as_posix() for name in expected for parent in safe_name(name).parents if str(parent) != '.'}
+              need(files == set(expected) and directories == parents, 'output allowlist mismatch')
+              need(total <= MAX_SITE_BYTES, 'site capacity')
+              return total
+
+
+          def extract_checked(archive_path, root, expected, overwrite):
+              need(not archive_path.is_symlink() and stat.S_ISREG(archive_path.stat().st_mode), 'regular ZIP required')
+              with zipfile.ZipFile(archive_path) as archive:
+                  members = archive.infolist()
+                  names = [member.filename for member in members]
+                  need(len(names) == len(set(names)) == len(expected) and set(names) == set(expected), 'ZIP member allowlist mismatch')
+                  for member in members:
+                      safe_name(member.filename)
+                      need(not member.is_dir() and stat.S_ISREG(member.external_attr >> 16), 'ZIP link or directory refused')
+                      need(not (member.flag_bits & 1) and member.compress_type in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED), 'ZIP encoding refused')
+                      need(0 < member.file_size <= MAX_FILE_BYTES, 'ZIP member extent')
+                  need(sum(member.file_size for member in members) <= MAX_SITE_BYTES, 'ZIP capacity')
+                  if overwrite:
+                      try:
+                          verify_tree(root, overwrite)
+                      except ValueError as error:
+                          raise ValueError('base file changed before overlay') from error
+                  else:
+                      need(not root.exists() and not root.is_symlink(), 'fresh output required')
+                      root.mkdir(mode=0o755)
+                  for member in members:
+                      target = root.joinpath(*safe_name(member.filename).parts)
+                      exists = member.filename in overwrite
+                      need(target.exists() == exists and not target.is_symlink(), 'unreviewed overwrite')
+                      if exists:
+                          need(file_hash(target) == overwrite[member.filename], 'base file changed before overlay')
+                      target.parent.mkdir(mode=0o755, parents=True, exist_ok=True)
+                      digest = hashlib.sha256()
+                      size = 0
+                      with archive.open(member) as source, target.open('wb' if exists else 'xb') as output:
+                          for block in iter(lambda: source.read(1024 * 1024), b''):
+                              size += len(block)
+                              need(size <= member.file_size, 'ZIP body extent')
+                              digest.update(block)
+                              output.write(block)
+                      need(size == member.file_size and digest.hexdigest() == expected[member.filename], 'file digest mismatch: ' + member.filename)
+                      target.chmod(0o644)
+
+          import json
+          import sys
+
+          repository, temporary = map(pathlib.Path, sys.argv[1:])
+          base = read_manifest(repository / 'base-site-sha256.txt', 197)
+          overlay = read_manifest(repository / 'overlay-sha256.txt', 288)
+          final = read_manifest(repository / 'site-sha256.txt', 475)
+          need(set(base) <= set(final), 'base file removal is not authorized')
+          need(overlay == {name: digest for name, digest in final.items() if base.get(name) != digest}, 'overlay is not the exact reviewed delta')
+          need(all(final[name] == digest for name, digest in base.items() if name.startswith('deployment/assets/objects/')), 'existing ciphertext must be reused unchanged')
+          base_zip = temporary / 'replay-site.zip'
+          overlay_zip = repository / 'sound-art-overlay.zip'
+          base_commitment = read_manifest(repository / 'replay-site.zip.sha256', 1)
+          overlay_commitment = read_manifest(repository / 'sound-art-overlay.zip.sha256', 1)
+          need(base_commitment == {'replay-site.zip': 'aed65571123ffffa0bf7faef47d78860c81ad277d99aefb9f570a11dbe0348ff'}, 'unreviewed base archive commitment')
+          need(overlay_commitment == {'sound-art-overlay.zip': 'c6ea6b9d3c1f629a72e6322a2ac839aa31dae2c4fb73db3e9a124d334e6bdd72'}, 'unreviewed overlay archive commitment')
+          need(file_hash(base_zip) == base_commitment['replay-site.zip'], 'base archive digest')
+          need(overlay_zip.stat().st_size < 25_000_000 and file_hash(overlay_zip) == overlay_commitment['sound-art-overlay.zip'], 'overlay archive extent/digest')
+          destination = temporary / 'replay-pages-site'
+          extract_checked(base_zip, destination, base, {})
+          base_bytes = verify_tree(destination, base)
+          extract_checked(overlay_zip, destination, overlay, base)
+          final_bytes = verify_tree(destination, final)
+          print(json.dumps({'baseFiles': len(base), 'baseBytes': base_bytes, 'overlayFiles': len(overlay), 'finalFiles': len(final), 'finalBytes': final_bytes, 'baseArchiveSha256': base_commitment['replay-site.zip'], 'overlayArchiveSha256': overlay_commitment['sound-art-overlay.zip'], 'exactAllowlist': True, 'allFileHashesVerified': True, 'symlinks': 0}, sort_keys=True))
+          VERIFY_SITE
       - name: Read Pages configuration
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
         with:
           enablement: false
-      - name: Upload the static site
+      - name: Upload the verified static site
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: ${{ runner.temp }}/replay-pages-site
