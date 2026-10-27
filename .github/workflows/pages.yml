@@ -31,11 +31,32 @@ jobs:
       - name: Verify and extract the reviewed static package
         shell: bash
         run: |
-          sha256sum --strict --check replay-site.zip.sha256
-          unzip -q replay-site.zip -d "$RUNNER_TEMP/replay-pages-site"
+          set -euo pipefail
+          parts=(replay-site.zip.part-{000..008})
+          actual_parts=(replay-site.zip.part-*)
+          test "${#actual_parts[@]}" -eq 9
+          printf '%s\n' "${parts[@]}" | diff - <(awk '{print $2}' parts-sha256.txt)
+          sha256sum --strict --check parts-sha256.txt
+          cat "${parts[@]}" > "$RUNNER_TEMP/replay-site.zip"
+          cd "$RUNNER_TEMP"
+          sha256sum --strict --check "$GITHUB_WORKSPACE/replay-site.zip.sha256"
+          python3 - "$RUNNER_TEMP/replay-site.zip" "$GITHUB_WORKSPACE/site-sha256.txt" <<'ZIP_CHECK'
+          import pathlib, stat, sys, zipfile
+          expected = [line.rstrip('\n')[66:] for line in open(sys.argv[2])]
+          assert len(expected) == len(set(expected)) == 197
+          with zipfile.ZipFile(sys.argv[1]) as archive:
+              members = archive.infolist()
+              names = [member.filename for member in members]
+              assert len(names) == len(set(names)) == 197 and set(names) == set(expected)
+              for member in members:
+                  path = pathlib.PurePosixPath(member.filename)
+                  assert not path.is_absolute() and '..' not in path.parts and '\\' not in member.filename
+                  assert not member.is_dir() and stat.S_ISREG(member.external_attr >> 16)
+          ZIP_CHECK
+          unzip -q "$RUNNER_TEMP/replay-site.zip" -d "$RUNNER_TEMP/replay-pages-site"
           cd "$RUNNER_TEMP/replay-pages-site"
           sha256sum --strict --check "$GITHUB_WORKSPACE/site-sha256.txt"
-          test "$(find . -type f | wc -l)" -eq 29
+          test "$(find . -type f | wc -l)" -eq 197
           test "$(find . -type l | wc -l)" -eq 0
       - name: Read Pages configuration
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5

@@ -5,23 +5,32 @@ Experimental browser playback for supported Eternal Fighter Zero Revival recordi
 ## Use
 
 [Open the replay player](https://qtc123123.github.io/efz-replay-pages/public/replay.html).
-Select a supported local `.rep` file and press **Open replay**, then **Play**. No resource key or game installation is required. Your recording stays in your browser. Pause, Step and stage-music volume controls are available.
+Choose a supported local `.rep` file, select the original battle's **Rounds to win**, and press **Open replay**, then **Play**. The win target supports 1, 2 or 3, with 2 as the default; the recording does not store this setting. No resource key entry or local game installation is required. The recording stays in your browser. Pause, Step and stage-music volume controls are available.
 
-The supported profile is Nayuki A versus Akiko (characters 17/16), stage 17, palettes 0/0, normal two-win battles and zero auxiliary-command high bytes. Unsupported recordings are rejected. Battle intros run; menus are skipped. Effect and voice audio is absent.
+The local replay profile admits all 25 character IDs (0–24), all 23 stages (0–22), and six DAT palette colors (0–5). Supported files use the EFZ Revival marker-104 paired-input extension with a valid saved RNG state. Auxiliary-command high bytes must be zero. Malformed or unsupported recordings are rejected. Files are bounded to 64 MiB and 1,000,000 updates. The selected win setting must reproduce the recording's natural battle end; a mismatch is reported as an error.
+
+Menus are skipped and battle intros run. This is direct battle playback, with no local checkpoint restore, seeking, or live spectator connection. Effect and voice audio is absent. Only the selected stage's music loads on Play; music failure does not stop simulation.
 
 ## Deployment contents
 
-This repository contains the prepared static player, source notices and encrypted resources in `replay-site.zip`. Its 29 files total 21,924,145 bytes before ZIP compression. The workflow verifies the archive digest and every extracted file before publishing the site.
+The prepared site contains 197 files totaling 187,340,404 bytes, including 176 ciphertext objects and all 23 stage-music payloads. The repository stores its ZIP as nine ordered parts, `replay-site.zip.part-000` through `replay-site.zip.part-008`, each at most 20 MiB. These are pieces of one ZIP, not individual archives. The complete ZIP is reconstructed only by the deployment workflow.
 
-Resources are decrypted automatically in the browser using a generated, obfuscated access module bound to the resource manifest. The original key file and plaintext resource files are not included. The obfuscation deters casual extraction; it is not a secrecy or copy-prevention guarantee.
+The workflow verifies the exact part list and order, each part's SHA-256, the reconstructed archive's SHA-256, the safe and exact 197-file ZIP member set, and every extracted file's SHA-256. It also checks the extracted file count and absence of symlinks. Only the extracted site is published.
 
-This is an experimental replay player. T04 service resume remains unimplemented and unqualified. The separate battle recordings do not qualify a continuous startup, selection, loading, results and rematch session. Artifact checks and a successful deployment do not establish Windows-native parity or complete session correctness.
+The browser loads the selected characters and stage from the full manifest, and decrypts their resources automatically using a generated access module bound to that manifest. The original key file, plaintext resource files, private recordings and development history are not included. The public access module intentionally supplies the information needed for browser decryption; its obfuscation does not guarantee secrecy or prevent resource extraction.
 
-The packaged `NOTICE.md` and `public/upstream-license.txt` preserve the original source notices. Some NOTICE paths describe the earlier private development layout and are historical references, not public links. This repository does not relicense third-party code or game resources.
+The packaged `NOTICE.md` and `public/upstream-license.txt` preserve the original source notices. Some NOTICE statements and paths describe the earlier private development layout, including its Git contents and private provenance documents. This repository distributes the generated Pages runtime within the split archive and does not relicense third-party code or game resources.
+
+## Qualification
+
+Resource coverage and admission across these ranges do not establish native correctness for every matchup. This remains an experimental reconstructed engine. Successful artifact verification or hosting does not establish complete browser gameplay, audible audio, Windows-native parity, or whole-session correctness.
+
+Verification for this candidate: the complete Node regression passed 1,055/1,055 tests; a separate campaign passed 150 fresh engine cases using real resources across the supported character/palette coverage; and the original supplied recording completed 7,637 updates with matching local- versus service-engine results. The regression includes synthetic fixtures. The 150 cases are initialization/update checks, not 150 complete recorded matches. These results do not establish native parity or live browser/audio qualification.
+
+T04 service resume remains unimplemented and unqualified. Separate battle recordings do not qualify a continuous startup, selection, loading, results and rematch session. Local playback uses a separate generated engine; the original service engine and its checkpoint admission identity remain unchanged.
 
 ## Publishing
 
 In repository Settings, select **Pages → Source → GitHub Actions**. The workflow runs on pushes to `main` and can also be started manually. It needs no custom token or resource-key secret.
 
-When replacing the package, review its exact contents and update both digest files and the workflow's expected file count. Only the extracted static artifact is published.
-
+Upload all nine parts and the accompanying manifests, README and workflow as one reviewed revision. When replacing the package, update all three checksum manifests and the workflow's expected part and file counts together. Confirm the successful deployment run before treating the new package as live.
