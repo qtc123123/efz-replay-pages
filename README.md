@@ -15,6 +15,11 @@ music, effects and fighter voices. The player pauses on the first game image
 The file does not store that target; changing it reloads the recording. No resource
 key entry or local game installation is needed. Recordings remain in the browser.
 
+The page uses the supplied original animated city behind a blurred translucent
+layer, with the original sunset softened beneath the header. Open replay is one
+compact action in each view. Decorative motion pauses for reduced-motion
+preference, hidden tabs and fullscreen; it cannot advance a replay.
+
 The sharp 4:3 player has video-style overlay controls on desktop and phone. Tap or
 click the image to show/hide them. They hide after 2.5 seconds of playback inactivity;
 held gestures, keyboard control focus and open Sound/Settings menus keep them visible. Showing
@@ -80,7 +85,10 @@ illustration is fetched for each open. Browser
 delivery supplies the information needed for decryption; public resources are not
 secret. Plaintext media, original key files and private recordings are excluded.
 
-Browser engine by **Mu-Tsun Tsai**. Existing `NOTICE.md` and
+Site, Netplay support and Engine modification by **Aquatic**.
+Original web engine by **Mu-Tsun Tsai**. Game created by **Twilight Frontier**,
+all rights reserved. This site is not affiliated with Team Shanghai Alice or
+Twilight Frontier. Existing `NOTICE.md` and
 `public/upstream-license.txt` are retained. This repository does not relicense
 third-party code or game resources. The app uses a typographic EFZ Replay Lab
 wordmark and existing source artwork; no image generation was used.
@@ -88,25 +96,26 @@ wordmark and existing source artwork; no image generation was used.
 ## Reviewed deployment
 
 This release publishes source commit
-[`9ef2ef5ba49209e96647472ad0e725b066e01d54`](https://github.com/Aquat1c/efz-replay-lab/commit/9ef2ef5ba49209e96647472ad0e725b066e01d54).
-The loading correction updates page HTML/CSS/controller, audio owners and deployment
-configuration, adding the loading-art owner and 176 encrypted loading-pack files.
-The engine, replay/seek/training implementations, original battle media and bound
-access bytes are unchanged.
+[`e0277b8a1d74576e916cbf0da30b2ca9a9bc693e`](https://github.com/Aquat1c/efz-replay-lab/commit/e0277b8a1d74576e916cbf0da30b2ca9a9bc693e).
+This update changes the page shell/controller and deployment configuration, adding
+one presentation module and a separately bound encrypted city texture/manifest.
+The engine, battle media,175 NL illustrations and browser access bytes are unchanged.
+The uploaded executable and decompilation are private static references and are
+not included in the site or executed by it.
 
-The final site has **662 files / 214,400,398 bytes**. The unchanged
+The final site has **665 files / 214,439,060 bytes**. The unchanged
 nine base ZIP parts and sound/art overlay are reused. `game-faithful-overlay.zip`
-contains the exact **199-file delta from the sound/art base**, is
-**7,191,387 bytes**, and has SHA-256:
+contains the exact **202-file delta from the sound/art base**, is
+**7,226,111 bytes**, and has SHA-256:
 
 ```
-4dc56376802408c1b7d700d5689fc3c8aead52234968e89d9f1bbc92e492df7f
+2d8b9941d3821f88870af0dd006a76a0d6d24fb4ad94278df095c6dd04e3509d
 ```
 
 The final `site-sha256.txt` SHA-256 is:
 
 ```
-ef5ef853d36647e27c1ca3516512231f00aa741e2dbd5a29c1674c88bd5c236a
+3bc4dc6153108651656c557247d0b4e89d16ee1e81e40241791ef064f4b9fa94
 ```
 
 The pinned Actions workflow verifies the exact ordered parts, all archive
@@ -116,13 +125,15 @@ overwrites are refused. Only that verified tree is uploaded to Pages.
 
 ## Evidence and remaining qualification
 
-Prepublication source regression passed **1,207/1,207 tests**, with zero failures,
-skips or cancellations. The exact candidate passed **19 shell interaction groups**
-and **six loading/menu groups** in actual Chromium, including phone, landscape,
-fullscreen, silent audio preparation, first-frame pause and replacement ownership.
-Independent review found and retested a hidden-route initial-step race, volume
-label grouping and a scrolling Close control. Detailed evidence and limits are in
-the [source qualification report](https://github.com/Aquat1c/efz-replay-lab/blob/9ef2ef5ba49209e96647472ad0e725b066e01d54/docs/qualification/PLAYER_LOADING_2026-10-28.md).
+Prepublication source regression passed **1,211/1,211 tests**, with zero failures,
+skips or cancellations;58 affected page/build tests passed after the final header
+markup change. The exact candidate passed **19 shell interaction groups** and
+**six city-background groups** in actual Chromium, including desktop/phone layouts,
+reduced motion, fullscreen, replay independence, resource failure and the requested
+credits. Independent code review found no critical or important issue. Evidence,
+input identities and native spatial-rendering references are in the
+[source qualification report](https://github.com/Aquat1c/efz-replay-lab/blob/e0277b8a1d74576e916cbf0da30b2ca9a9bc693e/docs/qualification/CITY_BACKGROUND_2026-10-28.md).
+Browser animation cadence is a presentation adaptation, not native timing parity.
 
 This UI release was explicitly requested for publication. Its fresh browser evidence
 uses labeled synthetic recordings. All 175 original NL illustrations were supplied
