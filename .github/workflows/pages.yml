@@ -24,17 +24,17 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Check out the reviewed base and overlays
+      - name: Check out the release
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Verify base, apply exact overlays, and verify the complete site
+      - name: Verify and unpack the site
         shell: bash
         run: |
           set -euo pipefail
-          parts=(replay-site.zip.part-{000..008})
+          parts=(replay-site.zip.part-{000..010})
           actual_parts=(replay-site.zip.part-*)
-          test "${#actual_parts[@]}" -eq 9
+          test "${#actual_parts[@]}" -eq 11
           printf '%s\n' "${parts[@]}" | diff - <(printf '%s\n' "${actual_parts[@]}")
           printf '%s\n' "${parts[@]}" | diff - <(awk '{print $2}' "$GITHUB_WORKSPACE/parts-sha256.txt")
           for part in "${parts[@]}"; do
@@ -120,7 +120,7 @@ jobs:
               return total
 
 
-          def extract_checked(archive_path, root, expected, overwrite):
+          def extract_checked(archive_path, root, expected):
               need(not archive_path.is_symlink() and stat.S_ISREG(archive_path.stat().st_mode), 'regular ZIP required')
               with zipfile.ZipFile(archive_path) as archive:
                   members = archive.infolist()
@@ -132,24 +132,15 @@ jobs:
                       need(not (member.flag_bits & 1) and member.compress_type in (zipfile.ZIP_STORED, zipfile.ZIP_DEFLATED), 'ZIP encoding refused')
                       need(0 < member.file_size <= MAX_FILE_BYTES, 'ZIP member extent')
                   need(sum(member.file_size for member in members) <= MAX_SITE_BYTES, 'ZIP capacity')
-                  if overwrite:
-                      try:
-                          verify_tree(root, overwrite)
-                      except ValueError as error:
-                          raise ValueError('base file changed before overlay') from error
-                  else:
-                      need(not root.exists() and not root.is_symlink(), 'fresh output required')
-                      root.mkdir(mode=0o755)
+                  need(not root.exists() and not root.is_symlink(), 'fresh output required')
+                  root.mkdir(mode=0o755)
                   for member in members:
                       target = root.joinpath(*safe_name(member.filename).parts)
-                      exists = member.filename in overwrite
-                      need(target.exists() == exists and not target.is_symlink(), 'unreviewed overwrite')
-                      if exists:
-                          need(file_hash(target) == overwrite[member.filename], 'base file changed before overlay')
+                      need(not target.exists() and not target.is_symlink(), 'fresh target required')
                       target.parent.mkdir(mode=0o755, parents=True, exist_ok=True)
                       digest = hashlib.sha256()
                       size = 0
-                      with archive.open(member) as source, target.open('wb' if exists else 'xb') as output:
+                      with archive.open(member) as source, target.open('xb') as output:
                           for block in iter(lambda: source.read(1024 * 1024), b''):
                               size += len(block)
                               need(size <= member.file_size, 'ZIP body extent')
@@ -162,37 +153,15 @@ jobs:
           import sys
 
           repository, temporary = map(pathlib.Path, sys.argv[1:])
-          base = read_manifest(repository / 'base-site-sha256.txt', 197)
-          overlay = read_manifest(repository / 'overlay-sha256.txt', 288)
-          sound_final = read_manifest(repository / 'sound-art-site-sha256.txt', 475)
-          final = read_manifest(repository / 'site-sha256.txt', 665)
-          redesign = read_manifest(repository / 'game-faithful-overlay-sha256.txt', 203)
-          need(set(base) <= set(sound_final), 'base file removal is not authorized')
-          need(overlay == {name: digest for name, digest in sound_final.items() if base.get(name) != digest}, 'overlay is not the exact reviewed delta')
-          need(all(sound_final[name] == digest for name, digest in base.items() if name.startswith('deployment/assets/objects/')), 'existing ciphertext must be reused unchanged')
-          need(set(sound_final) <= set(final), 'sound/art file removal is not authorized')
-          need(redesign == {name: digest for name, digest in final.items() if sound_final.get(name) != digest}, 'redesign is not the exact reviewed delta')
-          need(all(final[name] == digest for name, digest in sound_final.items() if name.startswith('deployment/assets/') or name == 'deployment/resource-access.mjs'), 'encrypted resources and bound browser access must be reused unchanged')
-          base_zip = temporary / 'replay-site.zip'
-          overlay_zip = repository / 'sound-art-overlay.zip'
-          base_commitment = read_manifest(repository / 'replay-site.zip.sha256', 1)
-          overlay_commitment = read_manifest(repository / 'sound-art-overlay.zip.sha256', 1)
-          need(base_commitment == {'replay-site.zip': 'aed65571123ffffa0bf7faef47d78860c81ad277d99aefb9f570a11dbe0348ff'}, 'unreviewed base archive commitment')
-          need(overlay_commitment == {'sound-art-overlay.zip': 'c6ea6b9d3c1f629a72e6322a2ac839aa31dae2c4fb73db3e9a124d334e6bdd72'}, 'unreviewed overlay archive commitment')
-          need(file_hash(base_zip) == base_commitment['replay-site.zip'], 'base archive digest')
-          need(overlay_zip.stat().st_size < 25_000_000 and file_hash(overlay_zip) == overlay_commitment['sound-art-overlay.zip'], 'overlay archive extent/digest')
-          redesign_zip = repository / 'game-faithful-overlay.zip'
-          redesign_commitment = read_manifest(repository / 'game-faithful-overlay.zip.sha256', 1)
-          need(redesign_commitment == {'game-faithful-overlay.zip': '880e69d4314f3434dc895151437885b120d2c0095f528804e80029dfe14f2f1a'}, 'unreviewed redesign archive commitment')
-          need(redesign_zip.stat().st_size == 7226591 and file_hash(redesign_zip) == redesign_commitment['game-faithful-overlay.zip'], 'redesign archive extent/digest')
+          expected = read_manifest(repository / 'site-sha256.txt', 665)
+          archive_path = temporary / 'replay-site.zip'
+          commitment = read_manifest(repository / 'replay-site.zip.sha256', 1)
+          need(commitment == {'replay-site.zip': '59f6061bd8da23bc310e5c530f5b5a1471a081b37b9db3b92424571b6c6ce5a6'}, 'unreviewed archive commitment')
+          need(archive_path.stat().st_size == 213053195 and file_hash(archive_path) == commitment['replay-site.zip'], 'archive extent/digest')
           destination = temporary / 'replay-pages-site'
-          extract_checked(base_zip, destination, base, {})
-          base_bytes = verify_tree(destination, base)
-          extract_checked(overlay_zip, destination, overlay, base)
-          sound_bytes = verify_tree(destination, sound_final)
-          extract_checked(redesign_zip, destination, redesign, sound_final)
-          final_bytes = verify_tree(destination, final)
-          print(json.dumps({'baseFiles': len(base), 'baseBytes': base_bytes, 'overlayFiles': len(overlay), 'soundArtFiles': len(sound_final), 'soundArtBytes': sound_bytes, 'redesignFiles': len(redesign), 'redesignArchiveSha256': redesign_commitment['game-faithful-overlay.zip'], 'finalFiles': len(final), 'finalBytes': final_bytes, 'baseArchiveSha256': base_commitment['replay-site.zip'], 'overlayArchiveSha256': overlay_commitment['sound-art-overlay.zip'], 'exactAllowlist': True, 'allFileHashesVerified': True, 'symlinks': 0}, sort_keys=True))
+          extract_checked(archive_path, destination, expected)
+          total_bytes = verify_tree(destination, expected)
+          print(json.dumps({'files': len(expected), 'bytes': total_bytes, 'archiveSha256': commitment['replay-site.zip'], 'exactAllowlist': True, 'allFileHashesVerified': True, 'symlinks': 0}, sort_keys=True))
           VERIFY_SITE
       - name: Read Pages configuration
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
