@@ -96,26 +96,27 @@ wordmark and existing source artwork; no image generation was used.
 ## Reviewed deployment
 
 This release publishes source commit
-[`e0277b8a1d74576e916cbf0da30b2ca9a9bc693e`](https://github.com/Aquat1c/efz-replay-lab/commit/e0277b8a1d74576e916cbf0da30b2ca9a9bc693e).
-This update changes the page shell/controller and deployment configuration, adding
-one presentation module and a separately bound encrypted city texture/manifest.
+[`7b29dd02b30e767fcb387459352f25382c0aec51`](https://github.com/Aquat1c/efz-replay-lab/commit/7b29dd02b30e767fcb387459352f25382c0aec51).
+The release includes the city backdrop, sunset header, compact action and credits.
+The public NOTICE.md contains concise credits and rights information. This latest
+update changes only that notice in the deployed site.
 The engine, battle media,175 NL illustrations and browser access bytes are unchanged.
 The uploaded executable and decompilation are private static references and are
 not included in the site or executed by it.
 
-The final site has **665 files / 214,439,060 bytes**. The unchanged
+The final site has **665 files / 214,437,296 bytes**. The unchanged
 nine base ZIP parts and sound/art overlay are reused. `game-faithful-overlay.zip`
-contains the exact **202-file delta from the sound/art base**, is
-**7,226,111 bytes**, and has SHA-256:
+contains the exact **203-file delta from the sound/art base**, is
+**7,226,591 bytes**, and has SHA-256:
 
 ```
-2d8b9941d3821f88870af0dd006a76a0d6d24fb4ad94278df095c6dd04e3509d
+880e69d4314f3434dc895151437885b120d2c0095f528804e80029dfe14f2f1a
 ```
 
 The final `site-sha256.txt` SHA-256 is:
 
 ```
-3bc4dc6153108651656c557247d0b4e89d16ee1e81e40241791ef064f4b9fa94
+c725b360507a38df937a2550f87eb8e666c835977337805ca5d73a3b56cab7c8
 ```
 
 The pinned Actions workflow verifies the exact ordered parts, all archive
@@ -132,8 +133,10 @@ markup change. The exact candidate passed **19 shell interaction groups** and
 reduced motion, fullscreen, replay independence, resource failure and the requested
 credits. Independent code review found no critical or important issue. Evidence,
 input identities and native spatial-rendering references are in the
-[source qualification report](https://github.com/Aquat1c/efz-replay-lab/blob/e0277b8a1d74576e916cbf0da30b2ca9a9bc693e/docs/qualification/CITY_BACKGROUND_2026-10-28.md).
+[source qualification report](https://github.com/Aquat1c/efz-replay-lab/blob/7b29dd02b30e767fcb387459352f25382c0aec51/docs/qualification/CITY_BACKGROUND_2026-10-28.md).
 Browser animation cadence is a presentation adaptation, not native timing parity.
+The notice-only update was compared byte-for-byte: every other deployed file,
+including the upstream license, is identical to that verified candidate.
 
 This UI release was explicitly requested for publication. Its fresh browser evidence
 uses labeled synthetic recordings. All 175 original NL illustrations were supplied
