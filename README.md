@@ -12,7 +12,7 @@ recorded inputs and optional hitboxes. No game installation is needed.
 3. Press **Play**.
 
 If the match used a different win target, select it in **Replay settings** before
-opening the file. Recordings do not store this setting; the default is two wins.
+opening the file. Recordings do not store this setting; the initial default is two wins.
 Changing it reloads the replay.
 
 ## Controls
@@ -27,6 +27,8 @@ hide after **1 second** of inactivity. Open menus and held controls keep them vi
 - Choose **EN / 日本語** for the interface and in-game artwork. Changing language
   keeps your replay position.
 - Open **Settings** for hitboxes, recorded inputs, match details and frame stepping.
+- Enable **Keep playing in background** in Settings to continue when switching
+  tabs or windows. It is off by default.
 - Recorded inputs appear on each player's side, with the number of frames held
   before each direction or button. Empty rows count frames with no input.
 
@@ -41,6 +43,11 @@ hide after **1 second** of inactivity. Open menus and held controls keep them vi
 
 Seeking and stepping are silent. Audio resumes with playback. Leaving the player
 pauses it; returning keeps your place without starting playback automatically.
+Music keeps its position through pauses and seeks; restarting the replay restarts
+the track.
+
+Your player settings are remembered in this browser, including volumes, mute,
+overlays, the win target, background playback, language and Voice mod.
 
 ## Supported recordings
 
