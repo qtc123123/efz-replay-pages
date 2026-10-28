@@ -7,16 +7,21 @@ stage music, effects and voices, exact restart seeking, and optional read-only a
 
 ## Open and watch
 
-Choose **Open replay**, select a local `.rep` recording, then press **Play**. In
+Choose **Open replay**, select a local `.rep` recording, and wait for loading to finish.
+A random original NL illustration covers preparation of the battle, selected-stage
+music, effects and fighter voices. The player pauses on the first game image
+(including the original intro); press **Play** when ready. In
 **Replay settings**, choose the original battle's win target (1–3; default 2).
 The file does not store that target; changing it reloads the recording. No resource
 key entry or local game installation is needed. Recordings remain in the browser.
 
 The sharp 4:3 player has video-style overlay controls on desktop and phone. Tap or
 click the image to show/hide them. They hide after 2.5 seconds of playback inactivity;
-held gestures, keyboard control focus and open Settings keep them visible. Showing
+held gestures, keyboard control focus and open Sound/Settings menus keep them visible. Showing
 controls never resizes the image. The **Settings gear** opens hitboxes, recorded
-inputs, detailed state and restart/previous/next controls. Closing restores focus.
+inputs, detailed state and restart/previous/next controls. The **Sound note** opens
+mute and separate music/effects volume sliders. Both menus fit inside the image
+and scroll when needed; closing restores focus.
 
 Space plays/pauses, Right Arrow steps, Left Arrow moves back and Home restarts while
 paused. F toggles fullscreen. Escape closes Settings, cancels a seek or exits
@@ -40,9 +45,9 @@ labels, including final last-live values.
 - **Hitboxes:** yellow push/body, green hurt and red attack geometry for fighters
   and active children. Attack geometry can remain after a hit and does not prove
   contact is currently damaging.
-- **Recorded inputs:** compact P1-left/P2-right rows beneath each side. A held-frame
+- **Recorded inputs:** compact P1-left/P2-right rows centered vertically on each side and scaled to the image. A held-frame
   count precedes plain direction/button symbols; neutral rows retain their count.
-  Up to six overlay runs come from the existing 128-update cursor window. `≥`
+  Up to fourteen overlay runs come from a 512-update cursor window. `≥`
   marks a hold that began before that window. Timestamped history in Settings can
   seek to a run. This is recorded input, not command acceptance or a live input poll.
 - **Detailed state:** source combo counters/damage, independent max hits/max damage
@@ -69,7 +74,9 @@ the selected target must reproduce the recording's natural battle end.
 
 The existing encrypted manifest still covers **506 paths / 450 unique ciphertext
 objects**, including stage music, effects, voices and interface resources. Resources
-and the bound public browser access module are reused byte-for-byte. Browser
+and the bound public browser access module are reused byte-for-byte. A separately
+bound catalog adds all 175 original NL loading illustrations; only the selected
+illustration is fetched for each open. Browser
 delivery supplies the information needed for decryption; public resources are not
 secret. Plaintext media, original key files and private recordings are excluded.
 
@@ -81,23 +88,25 @@ wordmark and existing source artwork; no image generation was used.
 ## Reviewed deployment
 
 This release publishes source commit
-[`77aa85d8d522b1b3c2f516eff4eae2e67316bd3b`](https://github.com/Aquat1c/efz-replay-lab/commit/77aa85d8d522b1b3c2f516eff4eae2e67316bd3b).
-Only five deployed paths differ from the previous public release: page HTML/CSS,
-the page controller, and the new navigation/control-visibility modules. The engine,
-replay/seek/training implementations, encrypted media and access bytes are unchanged.
+[`9ef2ef5ba49209e96647472ad0e725b066e01d54`](https://github.com/Aquat1c/efz-replay-lab/commit/9ef2ef5ba49209e96647472ad0e725b066e01d54).
+The loading correction updates page HTML/CSS/controller, audio owners and deployment
+configuration, adding the loading-art owner and 176 encrypted loading-pack files.
+The engine, replay/seek/training implementations, original battle media and bound
+access bytes are unchanged.
 
-The final site has **485 files / 207,619,892 bytes**. The unchanged nine base ZIP
-parts and sound/art overlay are reused. `game-faithful-overlay.zip` contains the
-exact **21-file delta from the sound/art base**, is **390,023 bytes**, and has SHA-256:
+The final site has **662 files / 214,400,398 bytes**. The unchanged
+nine base ZIP parts and sound/art overlay are reused. `game-faithful-overlay.zip`
+contains the exact **199-file delta from the sound/art base**, is
+**7,191,387 bytes**, and has SHA-256:
 
 ```
-04cd2b95edce75a35a0c2aaf91c9f73fa22ab8cab625bfa286837317560dec10
+4dc56376802408c1b7d700d5689fc3c8aead52234968e89d9f1bbc92e492df7f
 ```
 
 The final `site-sha256.txt` SHA-256 is:
 
 ```
-144dca1c2601d473a2ddd95eecef8c70b89b606df618174fae28bf5a88720616
+ef5ef853d36647e27c1ca3516512231f00aa741e2dbd5a29c1674c88bd5c236a
 ```
 
 The pinned Actions workflow verifies the exact ordered parts, all archive
@@ -107,21 +116,20 @@ overwrites are refused. Only that verified tree is uploaded to Pages.
 
 ## Evidence and remaining qualification
 
-Prepublication source regression passed **1,193/1,193 tests**, with zero failures,
-skips or cancellations; Python tooling passed **22/22**. The exact candidate passed
-**19 actual Chromium interaction groups**, responsive/fullscreen/large-text/reduced-
-motion checks, actual UI transition recordings and **35 local served runtime hash
-checks**. Independent code/visual review found and retested layout, route, fullscreen,
-held-drag and input-display defects. Detailed evidence and limits are recorded in
-the [source qualification report](https://github.com/Aquat1c/efz-replay-lab/blob/77aa85d8d522b1b3c2f516eff4eae2e67316bd3b/docs/qualification/DESIGN_RESET_EXECUTION_2026-10-28.md).
+Prepublication source regression passed **1,207/1,207 tests**, with zero failures,
+skips or cancellations. The exact candidate passed **19 shell interaction groups**
+and **six loading/menu groups** in actual Chromium, including phone, landscape,
+fullscreen, silent audio preparation, first-frame pause and replacement ownership.
+Independent review found and retested a hidden-route initial-step race, volume
+label grouping and a scrolling Close control. Detailed evidence and limits are in
+the [source qualification report](https://github.com/Aquat1c/efz-replay-lab/blob/9ef2ef5ba49209e96647472ad0e725b066e01d54/docs/qualification/PLAYER_LOADING_2026-10-28.md).
 
 This UI release was explicitly requested for publication. Its fresh browser evidence
-uses labeled synthetic recordings. The original `.rep` qualification input and the
-175 original `nl###.dat` illustrations were not supplied for this iteration. Loading
-continues to use the verified replay-art fallback; original NL loading is not claimed.
-Prior engine/native-related receipts retain their original scope and are not a new
-qualification campaign for this UI. Native Windows parity, physical-device behavior,
-audibility and every matchup's correctness are not established by these checks.
+uses labeled synthetic recordings. All 175 original NL illustrations were supplied
+through the user's Drive folder and hash-verified. No original `.rep` was supplied
+for this correction. Prior engine/native receipts retain their original scope;
+native Windows parity, physical-device behavior, audibility and every matchup's
+correctness are not established by these checks.
 
 **T04 and portable local checkpoints remain unqualified/refused.** Exact restart
 seeking does not qualify continuous startup/selection/loading/battle/results/rematch
