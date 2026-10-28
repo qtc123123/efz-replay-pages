@@ -22,7 +22,7 @@ hide after **1 second** of inactivity. Open menus and held controls keep them vi
 
 - Drag the timeline to seek. Longer seeks may take a few seconds and can be cancelled.
 - Open **Sound** to mute audio or adjust music and effects separately.
-- Open **Settings** for hitboxes, recorded inputs, detailed state and frame stepping.
+- Open **Settings** for hitboxes, recorded inputs, match details and frame stepping.
 - Recorded inputs appear on each player's side, with the number of frames held
   before each direction or button. Empty rows count frames with no input.
 
@@ -42,7 +42,7 @@ pauses it; returning keeps your place without starting playback automatically.
 
 The player supports EFZ Revival paired-input recordings, all 25 characters,
 23 stages, six palettes and win targets of one to three rounds. Files are limited
-to 64 MiB and 1,000,000 game updates. Unsupported or incomplete files show an error.
+to 64 MiB and 1,000,000 game frames. Unsupported or incomplete files show an error.
 Compatibility with every recording or gameplay modification is not guaranteed.
 
 **Live spectating is not available yet.** The Watch page will need a connected
