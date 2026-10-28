@@ -21,6 +21,7 @@ Tap or click the game image to show or hide the controls. During playback they
 hide after **1 second** of inactivity. Open menus and held controls keep them visible.
 
 - Drag the timeline to seek. Longer seeks may take a few seconds and can be cancelled.
+- Restart returns to the first gameplay frame and pauses there.
 - Open **Sound** to mute audio or adjust music and effects separately.
 - Enable **Voice mod** in Sound for the optional replacement voices. Original
   game sounds are used by default; both sets load before playback.
