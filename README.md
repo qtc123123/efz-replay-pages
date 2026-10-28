@@ -22,6 +22,10 @@ hide after **1 second** of inactivity. Open menus and held controls keep them vi
 
 - Drag the timeline to seek. Longer seeks may take a few seconds and can be cancelled.
 - Open **Sound** to mute audio or adjust music and effects separately.
+- Enable **Voice mod** in Sound for the optional replacement voices. Original
+  game sounds are used by default; both sets load before playback.
+- Choose **EN / 日本語** for the interface and in-game artwork. Changing language
+  keeps your replay position.
 - Open **Settings** for hitboxes, recorded inputs, match details and frame stepping.
 - Recorded inputs appear on each player's side, with the number of frames held
   before each direction or button. Empty rows count frames with no input.
@@ -52,8 +56,11 @@ spectator service before it can show sessions.
 
 - Site, Netplay support and Engine modification by **Aquatic**.
 - Original web engine by **Mu-Tsun Tsai**.
+- English translation by **SaltyBucket & fishshapedfish**.
+- Original voiceover source: **Key/Tactics**.
 - Game created by **Twilight Frontier**, all rights reserved.
+- Original visual novels: **Key** (Kanon / AIR), **NEXTONE** (MOON. / ONE).
 
-This site is not affiliated with Team Shanghai Alice or Twilight Frontier.
+This site is not affiliated with Twilight Frontier, Key or NEXTONE.
 See the [credits and notices](https://qtc123123.github.io/efz-replay-pages/NOTICE.md)
 and [original engine license](https://qtc123123.github.io/efz-replay-pages/public/upstream-license.txt).
