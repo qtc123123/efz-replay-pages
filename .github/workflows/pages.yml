@@ -156,8 +156,8 @@ jobs:
           expected = read_manifest(repository / 'site-sha256.txt', 750)
           archive_path = temporary / 'replay-site.zip'
           commitment = read_manifest(repository / 'replay-site.zip.sha256', 1)
-          need(commitment == {'replay-site.zip': 'f1dfaf5c58115263ec4d307585d5b4fa7ff85a6da5558da969a71e03da7e37fa'}, 'unreviewed archive commitment')
-          need(archive_path.stat().st_size == 220669811 and file_hash(archive_path) == commitment['replay-site.zip'], 'archive extent/digest')
+          need(commitment == {'replay-site.zip': 'aa53d90ab3b7b87e6d71cacb65dbdc9d00ebddce0452d268515b390b2680f15a'}, 'unreviewed archive commitment')
+          need(archive_path.stat().st_size == 220669826 and file_hash(archive_path) == commitment['replay-site.zip'], 'archive extent/digest')
           destination = temporary / 'replay-pages-site'
           extract_checked(archive_path, destination, expected)
           total_bytes = verify_tree(destination, expected)
