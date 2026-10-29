@@ -7,13 +7,35 @@ recorded inputs and optional hitboxes. No game installation is needed.
 
 ## Watch a replay
 
-1. Choose **Open replay** and select a `.rep` file. Your recording stays in your browser.
+1. Choose **Add files or archives**, **Add folder**, or **Open replay**. Select `.rep`, ZIP, RAR or 7z files. Your recordings stay in your browser.
 2. Wait for the game and audio to load. The player pauses on the first game image.
 3. Press **Play**.
 
 If the match used a different win target, select it in **Replay settings** before
 opening the file. Recordings do not store this setting; the initial default is two wins.
 Changing it reloads the replay.
+
+## Local playlist
+
+Folders and nested archives appear above replay cards. Each card shows original
+character-selection artwork, duration when available, then a Vanilla/Revival badge.
+Native duration is `-` until the recording is opened; bulk import never simulates
+all native matches. Empty `.rep` entries are omitted. Exact duplicate bytes are
+stored once, while their folder locations remain separate.
+
+Use previous/next recording controls or enable **Auto-advance** (off by default).
+Cards can be reordered or removed. Imports can be cancelled without losing the
+entries already admitted. Search and pagination keep large packs navigable.
+The library is session-only: choose the files again after reloading.
+
+Limits: 128 MiB per archive, 64 MiB per replay, four nested archives below the
+outer archive, 20,000 visited entries, 10,000 playlist entries, 256 MiB retained
+unique replay bytes and a 120-second import timeout. Password-protected,
+multipart and self-extracting archives are not supported. Partial errors are
+shown without discarding other accepted recordings.
+
+Archive decoding uses pinned libarchive.js/libarchive WASM with local hardening.
+[Decoder notices and provenance](https://qtc123123.github.io/efz-replay-pages/vendor/libarchive/PROVENANCE.md).
 
 ## Controls
 
