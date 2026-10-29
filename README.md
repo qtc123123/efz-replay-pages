@@ -20,8 +20,10 @@ Changing it reloads the replay.
 Folders and nested archives appear above replay cards. Each card shows original
 character-selection artwork, duration when available, then a Vanilla/Revival badge.
 Native duration is `-` until the recording is opened; bulk import never simulates
-all native matches. Empty `.rep` entries are omitted. Exact duplicate bytes are
-stored once, while their folder locations remain separate.
+all native matches. Empty `.rep` entries are omitted. Archive contents stay as metadata until selected;
+selected recordings share a bounded 64 MiB cache. Original archives remain local.
+Recognizable filenames supply player names and recorded dates. Card backgrounds
+use softly blurred original stage artwork.
 
 Use previous/next recording controls or enable **Auto-advance** (off by default).
 Cards can be reordered or removed. Imports can be cancelled without losing the
@@ -29,13 +31,18 @@ entries already admitted. Search and pagination keep large packs navigable.
 The library is session-only: choose the files again after reloading.
 
 Limits: 128 MiB per archive, 64 MiB per replay, four nested archives below the
-outer archive, 20,000 visited entries, 10,000 playlist entries, 256 MiB retained
-unique replay bytes and a 120-second import timeout. Password-protected,
+outer archive, 20,000 visited entries, 20,000 playlist entries, 4 GiB expanded-work budget and 64 MiB selected-replay
+cache and a 120-second import timeout. Password-protected,
 multipart and self-extracting archives are not supported. Partial errors are
 shown without discarding other accepted recordings.
 
 Archive decoding uses pinned libarchive.js/libarchive WASM with local hardening.
 [Decoder notices and provenance](https://qtc123123.github.io/efz-replay-pages/vendor/libarchive/PROVENANCE.md).
+
+Solid archives may need to decode earlier data when a replay is selected. Use
+**Cancel extraction** to stop waiting. Recordings can end without a KO; the player
+reports **Recording ended**. Recorded F4/F5/Escape commands are supported in local
+Revival playback; unqualified command bits still produce an explicit error.
 
 ## Controls
 
