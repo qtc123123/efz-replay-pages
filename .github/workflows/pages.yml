@@ -32,9 +32,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          parts=(replay-site.zip.part-{000..010})
+          parts=(replay-site.zip.part-{000..008} replay-site.zip.part-009-{0..1} replay-site.zip.part-010)
           actual_parts=(replay-site.zip.part-*)
-          test "${#actual_parts[@]}" -eq 11
+          test "${#actual_parts[@]}" -eq 12
           printf '%s\n' "${parts[@]}" | diff - <(printf '%s\n' "${actual_parts[@]}")
           printf '%s\n' "${parts[@]}" | diff - <(awk '{print $2}' "$GITHUB_WORKSPACE/parts-sha256.txt")
           for part in "${parts[@]}"; do
@@ -153,11 +153,11 @@ jobs:
           import sys
 
           repository, temporary = map(pathlib.Path, sys.argv[1:])
-          expected = read_manifest(repository / 'site-sha256.txt', 751)
+          expected = read_manifest(repository / 'site-sha256.txt', 754)
           archive_path = temporary / 'replay-site.zip'
           commitment = read_manifest(repository / 'replay-site.zip.sha256', 1)
-          need(commitment == {'replay-site.zip': 'e547c271c0b7ad39d2ebdcf010a432c4f98ca6459e1b71599dcf3120b24b9a72'}, 'unreviewed archive commitment')
-          need(archive_path.stat().st_size == 220671172 and file_hash(archive_path) == commitment['replay-site.zip'], 'archive extent/digest')
+          need(commitment == {'replay-site.zip': 'd6d492cfdb5b9d8a45848ce2220834036d3b9925e9cc01b637d5f16aa214c9e1'}, 'unreviewed archive commitment')
+          need(archive_path.stat().st_size == 220678071 and file_hash(archive_path) == commitment['replay-site.zip'], 'archive extent/digest')
           destination = temporary / 'replay-pages-site'
           extract_checked(archive_path, destination, expected)
           total_bytes = verify_tree(destination, expected)

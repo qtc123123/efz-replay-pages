@@ -2,7 +2,7 @@
 
 [Open EFZ Replay Lab](https://qtc123123.github.io/efz-replay-pages/)
 
-Watch Eternal Fighter Zero Revival replays in your browser, with game audio,
+Watch Eternal Fighter Zero native and Revival replays in your browser, with game audio,
 recorded inputs and optional hitboxes. No game installation is needed.
 
 ## Watch a replay
@@ -52,9 +52,13 @@ overlays, the win target, background playback, language and Voice mod.
 
 ## Supported recordings
 
-The player supports EFZ Revival paired-input recordings, all 25 characters,
+The player supports native EFZ recordings and current/older Revival paired-input
+recordings, all 25 characters,
 23 stages, six palettes and win targets of one to three rounds. Files are limited
 to 64 MiB and 1,000,000 game frames. Unsupported or incomplete files show an error.
+Native recordings are scanned before playback. Recordings that run out of data
+before a complete finish are rejected without inventing inputs. Native tapes do
+not provide the separate recorded-input history available in paired recordings.
 Compatibility with every recording or gameplay modification is not guaranteed.
 
 **Live spectating is not available yet.** The Watch page will need a connected
