@@ -44,6 +44,24 @@ Solid archives may need to decode earlier data when a replay is selected. Use
 reports **Recording ended**. Recorded F4/F5/Escape commands are supported in local
 Revival playback; unqualified command bits still produce an explicit error.
 
+## Filters and sorting
+
+Open **Filters** to select players independently for P1 and P2, recorded
+characters, stage, format, duration or rounds played. Player choices come from
+recognized filenames; original spelling is preserved. The existing filename/path
+search works alongside these controls. Cards show uncompressed replay file size.
+
+Sort the displayed view by duration, rounds, file size, recorded date or filename.
+Unknown values remain `-` and sort last. Sorting and filtering do not change the
+playback queue; reorder arrows are available only in unfiltered Playlist order.
+
+Round totals count combat rounds, including an unfinished final round. They appear
+only after a complete validated traversal: the existing selected-native opening
+scan, ordinary playback or a requested seek to the end. Browsing never simulates
+the whole playlist. **Interrupted** means the recording ended before a winner under
+the selected win target; a valid interrupted recording remains playable. Analysis
+is session-local and is not reused across incompatible win-target settings.
+
 ## Controls
 
 Tap or click the game image to show or hide the controls. During playback they
