@@ -143,8 +143,8 @@ def apply_overlay(destination, overlay_root, expected):
 def main(repository, temporary):
     import json
     base = read_manifest(repository / 'base-site-sha256.txt', 767)
-    final = read_manifest(repository / 'site-sha256.txt', 828)
-    overlay = read_manifest(repository / 'runtime-overlay-sha256.txt', 78)
+    final = read_manifest(repository / 'site-sha256.txt', 851)
+    overlay = read_manifest(repository / 'runtime-overlay-sha256.txt', 101)
     check_transition(base, final, overlay)
 
     base_path = temporary / 'replay-site.zip'
@@ -154,8 +154,8 @@ def main(repository, temporary):
 
     overlay_path = repository / 'runtime-overlay.zip'
     overlay_commitment = read_manifest(repository / 'runtime-overlay.zip.sha256', 1)
-    need(overlay_commitment == {'runtime-overlay.zip': '4292c29b65b8b280dab0071c8c4bf8c37003eee0b31bf05edd538c06b34ce3e7'}, 'unreviewed overlay commitment')
-    need(overlay_path.stat().st_size == 628559 and file_hash(overlay_path) == overlay_commitment['runtime-overlay.zip'], 'overlay archive extent/digest')
+    need(overlay_commitment == {'runtime-overlay.zip': '341df61577642c081205a4363f9660cb5b4576fcfed2247eec50a3b01f1b4bda'}, 'unreviewed overlay commitment')
+    need(overlay_path.stat().st_size == 1029875 and file_hash(overlay_path) == overlay_commitment['runtime-overlay.zip'], 'overlay archive extent/digest')
 
     destination = temporary / 'replay-pages-site'
     overlay_root = temporary / 'replay-pages-overlay'
@@ -166,7 +166,7 @@ def main(repository, temporary):
     verify_tree(overlay_root, overlay)
     apply_overlay(destination, overlay_root, overlay)
     final_bytes = verify_tree(destination, final)
-    need(final_bytes == 224022258, 'final site extent')
+    need(final_bytes == 225880854, 'final site extent')
     print(json.dumps({'files': len(final), 'bytes': final_bytes, 'baseArchiveSha256': base_commitment['replay-site.zip'], 'overlaySha256': overlay_commitment['runtime-overlay.zip'], 'overlayFiles': len(overlay), 'exactAllowlist': True, 'allFileHashesVerified': True, 'symlinks': 0}, sort_keys=True))
 
 
