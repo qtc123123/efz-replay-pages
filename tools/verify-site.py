@@ -154,8 +154,8 @@ def main(repository, temporary):
 
     overlay_path = repository / 'runtime-overlay.zip'
     overlay_commitment = read_manifest(repository / 'runtime-overlay.zip.sha256', 1)
-    need(overlay_commitment == {'runtime-overlay.zip': '9e3b20ba1a17ca00c088787822a0e2473a150cb9b4777ed00394bf907df2a9a9'}, 'unreviewed overlay commitment')
-    need(overlay_path.stat().st_size == 1029893 and file_hash(overlay_path) == overlay_commitment['runtime-overlay.zip'], 'overlay archive extent/digest')
+    need(overlay_commitment == {'runtime-overlay.zip': '0c88861b23747b1a59bb3652681568370b0595e7cbb2e639a737b17d77ab0f17'}, 'unreviewed overlay commitment')
+    need(overlay_path.stat().st_size == 1030304 and file_hash(overlay_path) == overlay_commitment['runtime-overlay.zip'], 'overlay archive extent/digest')
 
     destination = temporary / 'replay-pages-site'
     overlay_root = temporary / 'replay-pages-overlay'
@@ -166,7 +166,7 @@ def main(repository, temporary):
     verify_tree(overlay_root, overlay)
     apply_overlay(destination, overlay_root, overlay)
     final_bytes = verify_tree(destination, final)
-    need(final_bytes == 225881062, 'final site extent')
+    need(final_bytes == 225882486, 'final site extent')
     print(json.dumps({'files': len(final), 'bytes': final_bytes, 'baseArchiveSha256': base_commitment['replay-site.zip'], 'overlaySha256': overlay_commitment['runtime-overlay.zip'], 'overlayFiles': len(overlay), 'exactAllowlist': True, 'allFileHashesVerified': True, 'symlinks': 0}, sort_keys=True))
 
 
